@@ -99,15 +99,18 @@ def create_faiss_index(embeddings: np.ndarray):
     return index
 
 
-def save_index_and_meta(idx: faiss.IndexFlatL2, chunks: List[str], index_path: Path):
+def save_index_and_meta(idx, chunks: List[str], index_path: Path):
+    # Save faiss index and chunks metadata (simple .npy)
     faiss.write_index(idx, str(index_path / "index.faiss"))
     np.save(index_path / "chunks.npy", np.array(chunks, dtype=object), allow_pickle=True)
 
 
-def load_index_and_meta(index_path: Path) -> Tuple[faiss.IndexFlatL2, List[str]]:
+
+def load_index_and_meta(index_path: Path):
     idx = faiss.read_index(str(index_path / "index.faiss"))
     chunks = list(np.load(index_path / "chunks.npy", allow_pickle=True))
     return idx, chunks
+
 
 
 def retrieve_top_k(query: str, idx: faiss.IndexFlatL2, chunks: List[str], embedder: SentenceTransformer, k=TOP_K):
